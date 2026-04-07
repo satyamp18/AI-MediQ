@@ -1,0 +1,107 @@
+{% extends 'healthcare/base.html' %}
+
+{% block title %}Pharmacy - MediQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <i class="bi bi-shop"></i>
+        Online Pharmacy
+    </h1>
+    <p class="text-muted">Order medicines and healthcare products online</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <input type="text" class="form-control" placeholder="Search medicines..." id="search">
+    </div>
+    <div class="col-md-6">
+        <button class="btn btn-primary" onclick="window.location.href='{% url 'checkout' %}'">
+            <i class="bi bi-cart3"></i> View Cart
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    {% for medicine in medicines %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            {% if medicine.image %}
+            <img src="{{ medicine.image.url }}" class="card-img-top" alt="{{ medicine.name }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-capsule" style="font-size: 3rem; color: #ccc;"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ medicine.name }}</h5>
+                <p class="text-muted small">{{ medicine.dosage }}</p>
+                {% if medicine.description %}
+                <p class="card-text small">{{ medicine.description|truncatewords:15 }}</p>
+                {% endif %}
+                <h4 class="text-primary mb-3">₹{{ medicine.price }}</h4>
+                {% if medicine.in_stock %}
+                <span class="badge bg-success mb-3">In Stock</span>
+                {% else %}
+                <span class="badge bg-secondary mb-3">Out of Stock</span>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-white border-top">
+                <div class="d-flex gap-2">
+                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10" id="qty_{{ medicine.id }}">
+                    <button class="btn btn-sm btn-primary flex-grow-1" {% if not medicine.in_stock %}disabled{% endif %} onclick="addToCart({{ medicine.id }})">
+                        <i class="bi bi-plus-circle"></i> Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No medicines available at the moment
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+async function addToCart(medicineId) {
+    const quantity = parseInt(document.getElementById(`qty_${medicineId}`).value);
+    try {
+        const response = await fetch('{% url "add_to_cart" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                medicine_id: medicineId,
+                quantity: quantity
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            const btn = event.target;
+            btn.innerHTML = '<i class="bi bi-check-circle"></i> Added';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="bi bi-plus-circle"></i> Add';
+            }, 2000);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+// Search functionality
+document.getElementById('search').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    document.querySelectorAll('.col-md-6').forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        card.style.display = title.includes(query) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

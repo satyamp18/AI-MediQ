@@ -1,0 +1,125 @@
+{% extends 'healthcare/base.html' %}
+
+{% block title %}Dashboard - MediQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <i class="bi bi-speedometer2"></i>
+        Welcome Back, {{ user.first_name|default:user.username }}!
+    </h1>
+    <p class="text-muted">Your complete healthcare companion</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="metric-card">
+            <h3>{{ total_appointments }}</h3>
+            <p><i class="bi bi-calendar-check"></i> Total Appointments</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="metric-card">
+            <h3>{{ total_reports }}</h3>
+            <p><i class="bi bi-file-pdf"></i> Medical Reports</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="metric-card">
+            <h3>{{ total_prescriptions }}</h3>
+            <p><i class="bi bi-prescription2"></i> Prescriptions</p>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Appointments -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Recent Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Department</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for apt in recent_appointments %}
+                            <tr>
+                                <td><strong>{{ apt.doctor_name }}</strong></td>
+                                <td>{{ apt.get_department_display }}</td>
+                                <td>{{ apt.appointment_date }}</td>
+                                <td>{{ apt.appointment_time }}</td>
+                                <td>
+                                    {% if apt.status == 'CONFIRMED' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                    {% elif apt.status == 'PENDING' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% elif apt.status == 'COMPLETED' %}
+                                    <span class="badge bg-info">Completed</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'appointments' %}" class="btn btn-primary btn-sm">View All Appointments</a>
+                {% else %}
+                <p class="text-muted text-center py-4">No appointments yet. <a href="{% url 'appointments' %}">Book one now</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'voice_consultation' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-mic"></i> Voice Consultation
+                    </a>
+                    <a href="{% url 'appointments' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar-check"></i> Book Appointment
+                    </a>
+                    <a href="{% url 'medical_reports' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-file-pdf"></i> Upload Report
+                    </a>
+                    <a href="{% url 'prescriptions' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-prescription2"></i> View Prescriptions
+                    </a>
+                    <a href="{% url 'pharmacy' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-shop"></i> Order Medicines
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Tips -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Health Tip</h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">Stay hydrated by drinking at least 8 glasses of water daily. Proper hydration helps maintain body functions and improves overall health.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'healthcare/base.html' %}
+
+{% block title %}Appointments - MediQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <i class="bi bi-calendar-check"></i>
+        Manage Appointments
+    </h1>
+    <p class="text-muted">Book and manage your doctor appointments</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Book New Appointment</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Department/Specialization</label>
+                            <select class="form-select" name="department" required>
+                                <option value="">Select Department</option>
+                                {% for value, label in departments %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Doctor Name</label>
+                            <input type="text" class="form-control" name="doctor_name" placeholder="e.g., Dr. Sharma" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Preferred Date</label>
+                            <input type="date" class="form-control" name="appointment_date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Preferred Time</label>
+                            <input type="time" class="form-control" name="appointment_time" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Consultation Type</label>
+                        <div class="d-flex gap-3">
+                            {% for value, label in consultation_types %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="consultation_type" id="type_{{ value }}" value="{{ value }}" required>
+                                <label class="form-check-label" for="type_{{ value }}">
+                                    {{ label }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Describe Your Symptoms/Reason for Visit</label>
+                        <textarea class="form-control" name="symptoms" rows="3" placeholder="Please describe your symptoms or reason for the appointment..." required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="emergency" name="is_emergency">
+                                <label class="form-check-label" for="emergency">
+                                    <i class="bi bi-exclamation-circle"></i> Mark as Emergency
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="followup" name="is_followup">
+                                <label class="form-check-label" for="followup">
+                                    <i class="bi bi-arrow-repeat"></i> Follow-up Appointment
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Confirm Appointment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Upcoming Appointments</h5>
+            </div>
+            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                {% if appointments %}
+                    {% for apt in appointments %}
+                    <div class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="mb-1">{{ apt.doctor_name }}</h6>
+                                <small class="text-muted">{{ apt.get_department_display }}</small>
+                            </div>
+                            {% if apt.status == 'CONFIRMED' %}
+                            <span class="badge bg-success">Confirmed</span>
+                            {% elif apt.status == 'PENDING' %}
+                            <span class="badge bg-warning">Pending</span>
+                            {% elif apt.status == 'COMPLETED' %}
+                            <span class="badge bg-info">Completed</span>
+                            {% else %}
+                            <span class="badge bg-danger">Cancelled</span>
+                            {% endif %}
+                        </div>
+                        <p class="mb-2">
+                            <small>
+                                <i class="bi bi-calendar"></i> {{ apt.appointment_date }}<br>
+                                <i class="bi bi-clock"></i> {{ apt.appointment_time }}<br>
+                                <i class="bi bi-chat"></i> {{ apt.get_consultation_type_display }}
+                            </small>
+                        </p>
+                        {% if apt.is_emergency %}
+                        <span class="badge bg-danger mb-2">Emergency</span>
+                        {% endif %}
+                        {% if apt.is_followup %}
+                        <span class="badge bg-info mb-2">Follow-up</span>
+                        {% endif %}
+                        {% if apt.status != 'CANCELLED' %}
+                        <a href="{% url 'cancel_appointment' apt.id %}" class="btn btn-sm btn-outline-danger w-100">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted text-center py-5">
+                    <i class="bi bi-info-circle" style="font-size: 2rem;"></i><br>
+                    No appointments scheduled yet
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

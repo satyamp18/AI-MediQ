@@ -1,0 +1,186 @@
+{% extends 'healthcare/base.html' %}
+
+{% block title %}Health Analytics - MediQ{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <i class="bi bi-graph-up"></i>
+        Health Analytics Dashboard
+    </h1>
+    <p class="text-muted">Your health statistics and activity summary</p>
+</div>
+
+<!-- Key Metrics -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="metric-card">
+            <h3>{{ appointments_count }}</h3>
+            <p><i class="bi bi-calendar-check"></i> Total Appointments</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="metric-card">
+            <h3>{{ reports_count }}</h3>
+            <p><i class="bi bi-file-pdf"></i> Medical Reports</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="metric-card">
+            <h3>{{ prescriptions_count }}</h3>
+            <p><i class="bi bi-prescription2"></i> Prescriptions</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Appointments by Month</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Report Types</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="reportChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list"></i> Recent Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Department</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for apt in recent_appointments %}
+                            <tr>
+                                <td><strong>{{ apt.doctor_name }}</strong></td>
+                                <td>{{ apt.get_department_display }}</td>
+                                <td>{{ apt.appointment_date }}</td>
+                                <td>{{ apt.appointment_time }}</td>
+                                <td>{{ apt.get_consultation_type_display }}</td>
+                                <td>
+                                    {% if apt.status == 'CONFIRMED' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                    {% elif apt.status == 'PENDING' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% elif apt.status == 'COMPLETED' %}
+                                    <span class="badge bg-info">Completed</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">No appointments to display</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Monthly appointments chart
+    const monthlyData = {{ monthly_data|safe }};
+    const months = Object.keys(monthlyData);
+    const counts = Object.values(monthlyData);
+
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Appointments',
+                data: counts,
+                backgroundColor: 'rgba(102, 126, 234, 0.5)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Report types chart
+    const reportTypes = [
+        {% for report in report_types %}
+        '{{ report.report_type }}',
+        {% endfor %}
+    ];
+    const reportCounts = [
+        {% for report in report_types %}
+        {{ report.count }},
+        {% endfor %}
+    ];
+
+    const ctx2 = document.getElementById('reportChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: reportTypes,
+            datasets: [{
+                data: reportCounts,
+                backgroundColor: [
+                    'rgba(102, 126, 234, 0.8)',
+                    'rgba(118, 75, 162, 0.8)',
+                    'rgba(255, 107, 107, 0.8)',
+                    'rgba(52, 211, 153, 0.8)',
+                    'rgba(251, 191, 36, 0.8)',
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

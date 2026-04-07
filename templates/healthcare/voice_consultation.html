@@ -1,0 +1,234 @@
+{% extends 'healthcare/base.html' %}
+
+{% block title %}Voice Consultation - MediQ{% endblock %}
+
+{% block extra_css %}
+<style>
+    .consultation-input {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .chat-message {
+        margin-bottom: 15px;
+        padding: 12px;
+        border-radius: 8px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .chat-message.user {
+        background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
+        color: white;
+        margin-left: 40px;
+        text-align: right;
+        border-radius: 15px 4px 15px 15px;
+    }
+
+    .chat-message.ai {
+        background-color: #f0f9ff;
+        color: #212529;
+        margin-right: 40px;
+        border-radius: 4px 15px 15px 15px;
+        border-left: 4px solid #00b4d8;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .history-item {
+        padding: 10px;
+        margin-bottom: 8px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        border-left: 3px solid #00b4d8;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .history-item:hover {
+        background-color: #f0f9ff;
+        border-left-color: #0096c7;
+    }
+
+    .spinner-border {
+        color: #00b4d8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <i class="bi bi-mic"></i>
+        Voice & AI Consultation
+    </h1>
+    <p class="text-muted">Get instant medical information from our AI assistant</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-chat-left-dots"></i> AI Consultation Chat</h5>
+            </div>
+            <div class="card-body" style="height: 400px; overflow-y: auto;" id="chat-container">
+                <div class="text-center text-muted py-5">
+                    <p><i class="bi bi-chat-left-quote" style="font-size: 2rem;"></i></p>
+                    <p>Start by asking your health question below</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="consultation-input mt-3">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Consultation Mode</label>
+                    <select class="form-select" id="mode">
+                        <option value="General Health">General Health</option>
+                        <option value="Medicine Info">Medicine Info</option>
+                        <option value="Nutrition & Diet">Nutrition & Diet</option>
+                        <option value="Mental Health Support">Mental Health Support</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Response Language</label>
+                    <select class="form-select" id="language">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="es">Español (Spanish)</option>
+                        <option value="fr">Français (French)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Your Question</label>
+                <textarea class="form-control" id="question" rows="3" placeholder="Describe your health concern or ask a question..."></textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary flex-grow-1" id="ask-btn">
+                    <i class="bi bi-send"></i> Ask AI
+                </button>
+                <button class="btn btn-outline-secondary" onclick="document.getElementById('question').value=''">
+                    <i class="bi bi-arrow-counterclockwise"></i> Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Questions</h5>
+            </div>
+            <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                {% if consultation_history %}
+                    {% for chat in consultation_history %}
+                    <div class="history-item" onclick="loadQuestion('{{ chat.question|escapejs }}')">
+                        <small class="text-muted d-block">{{ chat.created_at|date:'M d, Y H:i' }}</small>
+                        <small><strong>{{ chat.question|truncatewords:10 }}</strong></small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted text-center py-3">No consultation history yet</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-shield-check"></i> Important</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning small mb-0">
+                    <strong>⚠️ Disclaimer:</strong> This AI provides general medical information only. It is NOT a substitute for professional medical advice. Always consult with a licensed healthcare provider for diagnosis and treatment.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function loadQuestion(question) {
+        document.getElementById('question').value = question;
+        document.getElementById('question').focus();
+    }
+
+    document.getElementById('ask-btn').addEventListener('click', async function() {
+        const question = document.getElementById('question').value;
+        const mode = document.getElementById('mode').value;
+        const language = document.getElementById('language').value;
+        const btn = this;
+
+        if (!question.trim()) {
+            alert('Please enter a question');
+            return;
+        }
+
+        // Add user message to chat
+        addChatMessage(question, 'user');
+        document.getElementById('question').value = '';
+
+        // Show loading indicator
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+
+        try {
+            const response = await fetch('{% url "ask_ai" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    question: question,
+                    mode: mode,
+                    language: language
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                addChatMessage(data.response, 'ai');
+            } else {
+                addChatMessage('Error: ' + data.error, 'ai');
+            }
+        } catch (error) {
+            addChatMessage('Error: ' + error.message, 'ai');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-send"></i> Ask AI';
+        }
+    });
+
+    function addChatMessage(text, sender) {
+        const container = document.getElementById('chat-container');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${sender}`;
+        messageDiv.innerHTML = text;
+        container.appendChild(messageDiv);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // Allow Enter key to submit
+    document.getElementById('question').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            document.getElementById('ask-btn').click();
+        }
+    });
+</script>
+{% endblock %}
