@@ -3,31 +3,35 @@
 {% block title %}Prescriptions - MediQ{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>
+<div class="page-header" style="position: relative; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem 2rem; border-radius: 15px; overflow: hidden;">
+    <div style="position: absolute; right: -50px; top: -50px; opacity: 0.1;">
+        <i class="bi bi-prescription2" style="font-size: 200px;"></i>
+    </div>
+    <h1 style="color: white; position: relative; z-index: 1;">
         <i class="bi bi-prescription2"></i>
         Prescriptions & Pharmacy
     </h1>
-    <p class="text-muted">Educational health suggestions and pharmacy services</p>
+    <p style="color: rgba(255,255,255,0.9); position: relative; z-index: 1;">Educational health suggestions and pharmacy services</p>
 </div>
 
 <div class="row">
     <div class="col-lg-8">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-wand2"></i> Generate AI Suggestion</h5>
+        <!-- AI Suggestion Card with Icon -->
+        <div class="card mb-4" style="border: none; box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1); border-radius: 15px;">
+            <div class="card-header" style="background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); border: none; border-radius: 15px 15px 0 0;">
+                <h5 class="mb-0" style="color: white;"><i class="bi bi-wand2"></i> Generate AI Suggestion</h5>
             </div>
             <div class="card-body">
-                <div class="alert alert-info mb-3">
+                <div class="alert alert-info mb-3" style="background-color: #e3f2fd; border-left: 4px solid #00d4ff;">
                     <i class="bi bi-info-circle"></i> <strong>Educational Only:</strong> AI suggestions are for educational purposes. Always consult a doctor for proper diagnosis and treatment.
                 </div>
                 <form method="POST" action="">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label class="form-label">Describe Your Symptoms</label>
-                        <textarea class="form-control" name="symptoms" rows="3" placeholder="e.g., fever, sore throat, cough..." required></textarea>
+                        <label class="form-label" style="font-weight: 600; color: #ffffff;">Describe Your Symptoms</label>
+                        <textarea class="form-control" name="symptoms" rows="3" placeholder="e.g., fever, sore throat, cough..." required style="background-color: #1a1a2e; border: 2px solid #00d4ff; color: #ffffff;"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); border: none; padding: 10px 30px; font-weight: 600;">
                         <i class="bi bi-sparkles"></i> Generate Suggestion
                     </button>
                 </form>
@@ -38,69 +42,101 @@
         <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-list-check"></i> Your Prescriptions</h5>
+        <!-- Prescriptions List with Images -->
+        <div class="card" style="border: none; box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1); border-radius: 15px;">
+            <div class="card-header" style="background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); border: none; border-radius: 15px 15px 0 0;">
+                <h5 class="mb-0" style="color: white;"><i class="bi bi-list-check"></i> Your Prescriptions</h5>
             </div>
             <div class="card-body">
                 {% if prescriptions %}
                     {% for presc in prescriptions %}
-                    <div class="border rounded p-3 mb-3" style="background-color: #f8f9fa;">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h6 class="mb-1"><i class="bi bi-exclamation-circle"></i> Symptoms</h6>
-                                <p class="small text-muted mb-2">{{ presc.symptoms }}</p>
+                    <div class="prescription-item mb-4" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #00d4ff; border-radius: 12px; overflow: hidden; display: flex; align-items: stretch;">
+                        <!-- Image Section -->
+                        <div style="width: 120px; min-width: 120px; background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <div style="text-align: center; color: white;">
+                                <i class="bi bi-capsule" style="font-size: 48px; display: block; margin-bottom: 5px;"></i>
+                                <small style="font-size: 10px; opacity: 0.8;">Rx</small>
                             </div>
-                            <small class="text-muted">{{ presc.created_at|date:'M d, Y' }}</small>
                         </div>
+                        
+                        <!-- Content Section -->
+                        <div style="flex: 1; padding: 20px;">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div style="flex: 1;">
+                                    <h6 style="color: #00d4ff; margin-bottom: 8px;"><i class="bi bi-exclamation-circle"></i> Symptoms</h6>
+                                    <p class="small" style="color: #ffffff; margin-bottom: 10px;">{{ presc.symptoms }}</p>
+                                </div>
+                                <small style="color: #b0b0b0; white-space: nowrap; margin-left: 15px;">{{ presc.created_at|date:'M d, Y' }}</small>
+                            </div>
 
-                        <div class="mb-3">
-                            <h6 class="mb-1"><i class="bi bi-lightbulb"></i> Suggestion (Educational)</h6>
-                            <p class="small">{{ presc.suggestion|truncatewords:50 }}</p>
-                        </div>
+                            <div class="mb-3">
+                                <h6 style="color: #00ffff; margin-bottom: 8px;"><i class="bi bi-lightbulb"></i> Suggestion (Educational)</h6>
+                                <p class="small" style="color: #b0b0b0;">{{ presc.suggestion|truncatewords:50 }}</p>
+                            </div>
 
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'download_prescription' presc.id %}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-download"></i> Download
-                            </a>
-                            <a href="{% url 'delete_prescription' presc.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this prescription?')">
-                                <i class="bi bi-trash"></i> Delete
-                            </a>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'download_prescription' presc.id %}" class="btn btn-sm" style="background-color: #00d4ff; color: #000; border: none; font-weight: 600;">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                                <a href="{% url 'delete_prescription' presc.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this prescription?')" style="border-color: #ef4444; color: #ef4444;">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </div>
                         </div>
                     </div>
                     {% endfor %}
                 {% else %}
-                <p class="text-muted text-center py-4">No prescriptions yet. Generate one above!</p>
+                <div style="text-align: center; padding: 60px 30px;">
+                    <i class="bi bi-file-medical" style="font-size: 60px; color: #00d4ff; opacity: 0.5; display: block; margin-bottom: 15px;"></i>
+                    <p style="color: #b0b0b0; font-size: 16px;">No prescriptions yet. Generate one above!</p>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
 
     <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-shop"></i> Featured Medicines</h5>
+        <!-- Featured Medicines Card -->
+        <div class="card" style="border: none; box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1); border-radius: 15px; overflow: hidden; position: sticky; top: 20px;">
+            <div class="card-header" style="background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); border: none;">
+                <h5 class="mb-0" style="color: white;"><i class="bi bi-shop"></i> Featured Medicines</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="padding: 0;">
                 {% for medicine in medicines %}
-                <div class="mb-3 p-3 border rounded">
-                    <h6 class="mb-1">{{ medicine.name }}</h6>
-                    <small class="text-muted d-block">{{ medicine.dosage }}</small>
-                    <h5 class="text-primary mt-2">₹{{ medicine.price }}</h5>
-                    <div class="d-flex gap-2 mt-2">
-                        <input type="number" class="form-control form-control-sm" value="1" min="1" max="10" id="qty_{{ medicine.id }}">
-                        <button class="btn btn-sm btn-outline-primary flex-grow-1" onclick="addToCart({{ medicine.id }})">
-                            <i class="bi bi-plus-circle"></i> Add
-                        </button>
+                <div class="medicine-item mb-0" style="border-bottom: 1px solid #2a2a3e; padding: 15px; display: flex; gap: 12px; transition: all 0.3s ease;">
+                    <!-- Medicine Icon -->
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="bi bi-capsule" style="font-size: 32px; color: white;"></i>
+                    </div>
+                    
+                    <!-- Medicine Info -->
+                    <div style="flex: 1;">
+                        <h6 style="color: #ffffff; margin-bottom: 4px;">{{ medicine.name }}</h6>
+                        <small style="color: #b0b0b0; display: block; margin-bottom: 8px;">{{ medicine.dosage }}</small>
+                        <h5 style="color: #00d4ff; margin-bottom: 8px; font-weight: 700;">₹{{ medicine.price }}</h5>
+                        <div class="d-flex gap-2 mt-2" style="align-items: center;">
+                            <input type="number" class="form-control form-control-sm" value="1" min="1" max="10" id="qty_{{ medicine.id }}" style="background-color: #1a1a2e; border: 1px solid #00d4ff; color: #ffffff; width: 50px; padding: 4px 8px;">
+                            <button class="btn btn-sm flex-grow-1" onclick="addToCart({{ medicine.id }})" style="background-color: #00d4ff; color: #000; border: none; font-weight: 600; padding: 4px 8px;">
+                                <i class="bi bi-plus-circle"></i> Add
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-muted text-center">No medicines available</p>
+                <div style="text-align: center; padding: 40px 20px; color: #b0b0b0;">
+                    <i class="bi bi-inbox" style="font-size: 40px; opacity: 0.5; display: block; margin-bottom: 10px;"></i>
+                    <p>No medicines available</p>
+                </div>
                 {% endfor %}
-                <a href="{% url 'pharmacy' %}" class="btn btn-primary w-100 mt-3">
-                    <i class="bi bi-shop"></i> Visit Full Pharmacy
-                </a>
+                <div style="padding: 15px;">
+                    <a href="{% url 'pharmacy' %}" class="btn w-100" style="background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); border: none; color: #000; font-weight: 600;">
+                        <i class="bi bi-shop"></i> Visit Full Pharmacy
+                    </a>
+                </div>
             </div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>
