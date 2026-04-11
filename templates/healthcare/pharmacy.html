@@ -3,20 +3,23 @@
 {% block title %}Pharmacy - MediQ{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>
+<div class="page-header" style="position: relative; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem 2rem; border-radius: 15px; overflow: hidden;">
+    <div style="position: absolute; right: -50px; top: -50px; opacity: 0.1;">
+        <i class="bi bi-shop" style="font-size: 200px;"></i>
+    </div>
+    <h1 style="color: white; position: relative; z-index: 1;">
         <i class="bi bi-shop"></i>
         Online Pharmacy
     </h1>
-    <p class="text-muted">Order medicines and healthcare products online</p>
+    <p style="color: rgba(255,255,255,0.9); position: relative; z-index: 1;">Order medicines and healthcare products online</p>
 </div>
 
-<div class="row mb-4">
+<div class="row mb-4" style="gap: 15px;">
     <div class="col-md-6">
-        <input type="text" class="form-control" placeholder="Search medicines..." id="search">
+        <input type="text" class="form-control" placeholder="🔍 Search medicines..." id="search" style="background-color: #1a1a2e; border: 2px solid #00d4ff; color: #ffffff; padding: 12px 15px; border-radius: 10px;">
     </div>
     <div class="col-md-6">
-        <button class="btn btn-primary" onclick="window.location.href='{% url 'checkout' %}'">
+        <button class="btn" onclick="window.location.href='{% url 'checkout' %}'" style="background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); border: none; color: #000; font-weight: 600; width: 100%; padding: 12px 15px;">
             <i class="bi bi-cart3"></i> View Cart
         </button>
     </div>
@@ -25,31 +28,39 @@
 <div class="row">
     {% for medicine in medicines %}
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
+        <div class="card h-100" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 212, 255, 0.15); transition: all 0.3s ease; background-color: #1a1a2e;">
+            <!-- Medicine Image/Icon -->
             {% if medicine.image %}
-            <img src="{{ medicine.image.url }}" class="card-img-top" alt="{{ medicine.name }}" style="height: 200px; object-fit: cover;">
+            <div style="height: 200px; background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); position: relative; overflow: hidden;">
+                <img src="{{ medicine.image.url }}" class="card-img-top" alt="{{ medicine.name }}" style="height: 100%; object-fit: cover; width: 100%;">
+            </div>
             {% else %}
-            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                <i class="bi bi-capsule" style="font-size: 3rem; color: #ccc;"></i>
+            <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%);">
+                <div style="text-align: center;">
+                    <i class="bi bi-capsule" style="font-size: 4rem; color: white; display: block; margin-bottom: 10px;"></i>
+                    <small style="color: rgba(255,255,255,0.8); font-weight: 600;">Medicine</small>
+                </div>
             </div>
             {% endif %}
-            <div class="card-body">
-                <h5 class="card-title">{{ medicine.name }}</h5>
-                <p class="text-muted small">{{ medicine.dosage }}</p>
+            
+            <div class="card-body" style="padding: 20px;">
+                <h5 class="card-title" style="color: #ffffff; font-weight: 700; margin-bottom: 8px;">{{ medicine.name }}</h5>
+                <p class="text-muted small" style="color: #b0b0b0; margin-bottom: 10px;">{{ medicine.dosage }}</p>
                 {% if medicine.description %}
-                <p class="card-text small">{{ medicine.description|truncatewords:15 }}</p>
+                <p class="card-text small" style="color: #b0b0b0; margin-bottom: 15px;">{{ medicine.description|truncatewords:15 }}</p>
                 {% endif %}
-                <h4 class="text-primary mb-3">₹{{ medicine.price }}</h4>
+                <h4 style="color: #00d4ff; margin-bottom: 12px; font-weight: 700; font-size: 24px;">₹{{ medicine.price }}</h4>
                 {% if medicine.in_stock %}
-                <span class="badge bg-success mb-3">In Stock</span>
+                <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 8px 12px; margin-bottom: 15px; display: inline-block;">✓ In Stock</span>
                 {% else %}
-                <span class="badge bg-secondary mb-3">Out of Stock</span>
+                <span class="badge" style="background-color: #ef4444; padding: 8px 12px; margin-bottom: 15px; display: inline-block;">Out of Stock</span>
                 {% endif %}
             </div>
-            <div class="card-footer bg-white border-top">
-                <div class="d-flex gap-2">
-                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10" id="qty_{{ medicine.id }}">
-                    <button class="btn btn-sm btn-primary flex-grow-1" {% if not medicine.in_stock %}disabled{% endif %} onclick="addToCart({{ medicine.id }})">
+            
+            <div class="card-footer" style="background-color: transparent; border-top: 1px solid #2a2a3e; padding: 15px;">
+                <div class="d-flex gap-2" style="align-items: center;">
+                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10" id="qty_{{ medicine.id }}" style="background-color: #0f0f1e; border: 1px solid #00d4ff; color: #ffffff; width: 60px; padding: 8px 10px; border-radius: 8px;">
+                    <button class="btn btn-sm flex-grow-1" {% if not medicine.in_stock %}disabled{% endif %} onclick="addToCart({{ medicine.id }})" style="background: linear-gradient(135deg, #00d4ff 0%, #0096c7 100%); border: none; color: #000; font-weight: 600; padding: 8px 15px; border-radius: 8px; transition: all 0.3s ease;">
                         <i class="bi bi-plus-circle"></i> Add
                     </button>
                 </div>
@@ -58,8 +69,9 @@
     </div>
     {% empty %}
     <div class="col-12">
-        <div class="alert alert-info text-center">
-            <i class="bi bi-info-circle"></i> No medicines available at the moment
+        <div class="alert alert-info text-center" style="background-color: #e3f2fd; border: 2px solid #00d4ff; border-radius: 10px; padding: 40px;">
+            <i class="bi bi-info-circle" style="font-size: 40px; color: #00d4ff; display: block; margin-bottom: 15px;"></i>
+            <p style="color: #0096c7; font-size: 16px; margin: 0;">No medicines available at the moment</p>
         </div>
     </div>
     {% endfor %}
