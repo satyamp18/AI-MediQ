@@ -124,7 +124,7 @@ def ask_ai(request):
         
         # Call Gemini API
         try:
-            model = genai.GenerativeModel("gemini-2.5-pro")
+            model = genai.GenerativeModel("gemini-2.5-flash")
             prompt = (
                 f"You are a medical information assistant (mode: {mode}).\n"
                 "Provide safe, factual, and general health guidance. DO NOT diagnose or prescribe medications.\n"
@@ -133,8 +133,18 @@ def ask_ai(request):
             resp = model.generate_content(prompt)
             ai_response = resp.text if hasattr(resp, "text") else str(resp)
         except Exception as api_error:
+            error_str = str(api_error)
+            print(f"API Error: {error_str}")
+            
             # Fallback response if API fails
-            if "API key" in str(api_error) or "400" in str(api_error):
+            if "429" in error_str or "quota" in error_str.lower():
+                ai_response = (
+                    "⚠️ Service Quota Exceeded: The Gemini API free tier quota has been reached. "
+                    "The service will resume after the quota resets (typically 24 hours).\n\n"
+                    "General guidance: Always consult with a licensed healthcare professional for medical concerns. "
+                    "Maintain a healthy lifestyle with regular exercise, balanced diet, and adequate sleep."
+                )
+            elif "API key" in error_str or "400" in error_str:
                 ai_response = (
                     "⚠️ API Configuration Issue: The Gemini API key appears to be invalid or not configured. "
                     "Please add a valid API key to your .env file and restart the server.\n\n"
@@ -143,7 +153,10 @@ def ask_ai(request):
                     "Maintain a healthy lifestyle with regular exercise, balanced diet, and adequate sleep."
                 )
             else:
-                raise
+                ai_response = (
+                    f"⚠️ API Error: {error_str}\n\n"
+                    "Please try again later or contact support if the issue persists."
+                )
         
         # Save to database
         patient = Patient.objects.get(user=request.user)
@@ -256,7 +269,7 @@ def prescriptions(request):
         symptoms = request.POST.get('symptoms')
         if symptoms:
             try:
-                model = genai.GenerativeModel("gemini-2.5-pro")
+                model = genai.GenerativeModel("gemini-2.5-flash")
                 prompt = f"Suggest general over-the-counter medicines and home remedies for: {symptoms}. Keep it educational only, concise."
                 resp = model.generate_content(prompt)
                 suggestion = resp.text if hasattr(resp, "text") else str(resp)
@@ -268,9 +281,12 @@ def prescriptions(request):
                 )
                 return redirect('prescriptions')
             except Exception as e:
+                error_msg = str(e)
+                if "429" in error_msg or "quota" in error_msg.lower():
+                    error_msg = "Service quota exceeded. Please try again after 24 hours."
                 return render(request, 'healthcare/prescriptions.html', {
                     'prescriptions': prescriptions,
-                    'error': f'Error: {str(e)}'
+                    'error': f'Error: {error_msg}'
                 })
     
     context = {
