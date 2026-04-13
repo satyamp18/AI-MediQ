@@ -1,36 +1,29 @@
-# 🏥 MediQ - AI Healthcare Platform# 🏥 MediQ - AI-Powered Healthcare Platform🏥 MediQ – AI-Powered Healthcare Platform
+# 🏥 MediQ – AI-Powered Healthcare Platform
 
 
 
 An AI-powered healthcare app built with Django. Chat with AI, book appointments, order medicines, and manage medical records.
 
 
+A modern, AI-driven healthcare application built with Django. Get instant medical guidance, book appointments, manage prescriptions, and order medicines - all in one place!🚀 Introduction
 
-![Django](https://img.shields.io/badge/Django-6.0.3-green)A modern, AI-driven healthcare application built with Django. Get instant medical guidance, book appointments, manage prescriptions, and order medicines - all in one place!🚀 Introduction
-
-![Python](https://img.shields.io/badge/Python-3.13+-blue)
-
-![AI](https://img.shields.io/badge/AI-Gemini-blue)
+MediQ is a full-stack AI-powered healthcare platform built using Django that simplifies patient care by integrating AI consultation, appointment management, online pharmacy, and medical records into a single system.
 
 
 
----![Django](https://img.shields.io/badge/Django-6.0.3-darkgreen)MediQ is a full-stack AI-powered healthcare platform built using Django that simplifies patient care by integrating AI consultation, appointment management, online pharmacy, and medical records into a single system.
+## ✨ Features!
 
 
 
-## ✨ Features![Python](https://img.shields.io/badge/Python-3.13+-blue)
-
-
-
-- 🤖 **AI Chat** - Get instant medical guidance![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.0-purple)The platform leverages Google Gemini AI to provide real-time, context-aware medical assistance, helping bridge the gap between patients and healthcare services with a seamless digital experience.
+- 🤖 **AI Chat** - Get instant medical guidance!The platform leverages Google Gemini AI to provide real-time, context-aware medical assistance, helping bridge the gap between patients and healthcare services with a seamless digital experience.
 
 - 📅 **Appointments** - Book doctor appointments
 
-- 💊 **Pharmacy** - Browse & order 15+ medicines![AI](https://img.shields.io/badge/AI-Google%20Gemini-blue)
+- 💊 **Pharmacy** - Browse & order 15+ medicines!
 
 - 📄 **Medical Records** - Upload health documents
 
-- 📊 **Dashboard** - View health analytics![License](https://img.shields.io/badge/License-MIT-green)🎯 Key Highlights:-
+- 📊 **Dashboard** - View health analytics!
 
 - 📋 **Prescriptions** - AI-generated suggestions
 
@@ -60,21 +53,8 @@ MediQ is a comprehensive healthcare platform that brings together AI consultatio
 
 # Clone✨ Features:-
 
-git clone https://github.com/satyamp18/AI-MediQ.git
-
 cd AI-MediQ---
 
-
-
-# Virtual environment🤖 AI Consultation System
-
-python -m venv django_env
-
-.\django_env\Scripts\activate  # Windows## ✨ Key FeaturesReal-time AI chat for medical guidance
-
-source django_env/bin/activate # macOS/Linux
-
-Context-aware and personalized responses
 
 # Install & setup
 
@@ -260,18 +240,6 @@ Access: **http://localhost:8000/admin**
 
 Chart.js
 
-## 🤝 Contributing
-
----
-
-1. Fork repo
-
-2. Create branch: `git checkout -b feature/your-feature`🌐 Core Modules:-
-
-3. Commit: `git commit -m "Add feature"`
-
-4. Push & create Pull Request## 🛠️ Technology Stack
-
 
 
 ---AI Consultation
@@ -284,9 +252,6 @@ Chart.js
 
 MIT License - Free to use|-----------|-----------|Pharmacy & Orders
 
-
-
----| **Backend** | Django 6.0.3 (Python) |Medical Records
 
 
 
@@ -331,59 +296,8 @@ Payment gateway integration
 
 Satyam Pandey
 
-### Installation (5 Easy Steps)GitHub: https://github.com/satyamp18
-
-**Step 1: Clone Repository**
-```bash
-git clone https://github.com/satyamp18/AI-MediQ.git
-cd AI-MediQ
-```
-
-**Step 2: Create Virtual Environment**
-```bash
-# Windows
-python -m venv django_env
-.\django_env\Scripts\activate
-
-# macOS/Linux
-python3 -m venv django_env
-source django_env/bin/activate
-```
-
-**Step 3: Install Dependencies**
-```bash
-pip install -r requirements.txt
-```
-
-**Step 4: Setup Database & Create .env File**
-```bash
-python manage.py migrate
-python manage.py createsuperuser  # Create admin account
-```
-
-Create `.env` in project root:
-```env
-GEMINI_API_KEY=your_api_key_here
-DEBUG=True
-SECRET_KEY=your-secret-key-here
-ALLOWED_HOSTS=localhost,127.0.0.1
-```
-
-**Step 5: Run Server**
-```bash
-python manage.py runserver
-```
 
 Open: **http://localhost:8000**
-
----
-
-## 🔑 Get Gemini API Key
-
-1. Visit [Google AI Studio](https://aistudio.google.com/)
-2. Click "Get API Key"
-3. Create new API key
-4. Add to `.env` file as `GEMINI_API_KEY`
 
 ---
 
@@ -428,37 +342,6 @@ Open: **http://localhost:8000**
 
 ---
 
-## 🗄️ Database Models
-
-| Model | Purpose |
-|-------|---------|
-| Patient | User health profile |
-| Appointment | Doctor appointments |
-| Medicine | Medicine catalog |
-| Order | Medicine orders |
-| Prescription | AI suggestions |
-| MedicalReport | Health documents |
-| ConsultationHistory | AI conversations |
-
----
-
-## 🌐 Main Pages & URLs
-
-| Page | URL | Features |
-|------|-----|----------|
-| Home | `/` | Welcome page |
-| Register | `/register/` | Create account |
-| Login | `/login/` | Sign in |
-| Dashboard | `/dashboard/` | Health overview |
-| AI Chat | `/consultation/` | AI assistant |
-| Appointments | `/appointments/` | Book appointments |
-| Pharmacy | `/pharmacy/` | Browse & order medicines |
-| Prescriptions | `/prescriptions/` | AI suggestions |
-| Medical Reports | `/medical-reports/` | Upload documents |
-| Health Dashboard | `/health-dashboard/` | Analytics & charts |
-| Admin Panel | `/admin/` | Admin control |
-
----
 
 ## 📁 Project Structure
 
@@ -507,29 +390,10 @@ AI-MediQ/
 
 ---
 
-## 🐛 Common Issues & Solutions
-
-| Problem | Solution |
-|---------|----------|
-| **"Module not found"** | Activate virtual environment & run `pip install -r requirements.txt` |
-| **"API key invalid"** | Create `.env` file with valid `GEMINI_API_KEY` |
-| **"Port 8000 in use"** | Run `python manage.py runserver 8001` |
-| **"Database error"** | Run `python manage.py migrate` |
-| **"No medicines showing"** | Run `python -c "import os, django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'medical_voice.settings'); django.setup(); exec(open('add_medicines.py').read())"` |
 
 ---
 
-## 📚 Admin Access
 
-**Default Admin Credentials:**
-```
-Username: admin
-Password: (set during createsuperuser)
-```
-
-Access: **http://localhost:8000/admin**
-
----
 
 ## 🤝 Contributing
 
@@ -544,37 +408,12 @@ We welcome contributions! Here's how:
 
 ---
 
-## 🚀 Future Enhancements
-
-- 🔜 Video consultation system
-- 🔜 Payment gateway integration (Stripe/Razorpay)
-- 🔜 Mobile app (React Native)
-- 🔜 Real-time notifications
-- 🔜 Advanced analytics
-- 🔜 Multi-language support
-- 🔜 Prescription auto-fulfillment
-
----
-
-## 📄 License
-
-MIT License - Free to use and modify
-
----
-
 ## 👤 Author
 
 **Satyam Pandey**
 - GitHub: [@satyamp18](https://github.com/satyamp18)
 - Repository: [AI-MediQ](https://github.com/satyamp18/AI-MediQ)
 
----
-
-## 💬 Support & Feedback
-
-- 🐛 **Report Issues:** [GitHub Issues](https://github.com/satyamp18/AI-MediQ/issues)
-- 💡 **Suggest Features:** [GitHub Discussions](https://github.com/satyamp18/AI-MediQ/discussions)
-- ⭐ **Star the Project:** Show your support!
 
 ---
 
