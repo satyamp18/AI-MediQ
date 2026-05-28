@@ -33,6 +33,118 @@
         margin-right: 40px;
         border-radius: 4px 15px 15px 15px;
         border-left: 4px solid #00d4ff;
+        line-height: 1.6;
+    }
+
+    /* Markdown Heading Styles */
+    .chat-message.ai .markdown-heading {
+        color: #00d4ff;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(0,212,255,0.3);
+        padding-bottom: 8px;
+    }
+
+    .chat-message.ai h1 { font-size: 1.8em; }
+    .chat-message.ai h2 { font-size: 1.5em; }
+    .chat-message.ai h3 { font-size: 1.3em; }
+    .chat-message.ai h4 { font-size: 1.1em; }
+    .chat-message.ai h5, .chat-message.ai h6 { font-size: 1em; }
+
+    /* Markdown List Styles */
+    .chat-message.ai .markdown-list {
+        margin-left: 20px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .chat-message.ai ul li, 
+    .chat-message.ai ol li {
+        margin-bottom: 6px;
+        color: #b0b0b0;
+    }
+
+    .chat-message.ai ul li::marker {
+        color: #00d4ff;
+    }
+
+    .chat-message.ai ol li::marker {
+        color: #0096c7;
+    }
+
+    /* Markdown Emphasis Styles */
+    .chat-message.ai .markdown-emphasis strong {
+        color: #00d4ff;
+        font-weight: 600;
+    }
+
+    .chat-message.ai em {
+        color: #b0b0b0;
+        font-style: italic;
+    }
+
+    /* Markdown Code Styles */
+    .chat-message.ai .markdown-code,
+    .chat-message.ai code {
+        background-color: rgba(0,212,255,0.1);
+        color: #00d4ff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+
+    .chat-message.ai pre {
+        background-color: rgba(0,0,0,0.3);
+        border: 1px solid rgba(0,212,255,0.2);
+        border-radius: 6px;
+        padding: 12px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        overflow-x: auto;
+    }
+
+    .chat-message.ai pre code {
+        background-color: transparent;
+        color: #00d4ff;
+        padding: 0;
+    }
+
+    /* Markdown Link Styles */
+    .chat-message.ai .markdown-link {
+        color: #00d4ff;
+        text-decoration: underline;
+        transition: all 0.2s ease;
+    }
+
+    .chat-message.ai .markdown-link:hover {
+        color: #0096c7;
+        text-decoration: none;
+    }
+
+    /* Markdown Paragraph Styles */
+    .chat-message.ai p {
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+
+    .chat-message.ai blockquote {
+        border-left: 3px solid #00d4ff;
+        background-color: rgba(0,212,255,0.05);
+        padding: 10px 15px;
+        margin: 10px 0;
+        border-radius: 4px;
+        color: #b0b0b0;
+        font-style: italic;
+    }
+
+    /* Markdown Horizontal Rule */
+    .chat-message.ai hr {
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(0,212,255,0), rgba(0,212,255,0.3), rgba(0,212,255,0));
+        margin: 15px 0;
     }
 
     @keyframes slideIn {
@@ -165,7 +277,21 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
+    // Configure marked options for better markdown rendering
+    marked.setOptions({
+        breaks: true,
+        gfm: true,
+        headerIds: true,
+        mangle: true,
+        pedantic: false,
+        sanitize: false,
+        smartLists: true,
+        smartypants: true,
+        xhtml: false
+    });
+
     function loadQuestion(question) {
         document.getElementById('question').value = question;
         document.getElementById('question').focus();
@@ -223,7 +349,32 @@
         const container = document.getElementById('chat-container');
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${sender}`;
-        messageDiv.innerHTML = text;
+        
+        // Render markdown for AI messages, plain text for user messages
+        if (sender === 'ai') {
+            messageDiv.innerHTML = marked(text);
+            // Add classes to markdown-rendered elements for styling
+            messageDiv.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
+                el.classList.add('markdown-heading');
+            });
+            messageDiv.querySelectorAll('ul, ol').forEach(el => {
+                el.classList.add('markdown-list');
+            });
+            messageDiv.querySelectorAll('strong, em').forEach(el => {
+                el.classList.add('markdown-emphasis');
+            });
+            messageDiv.querySelectorAll('code').forEach(el => {
+                el.classList.add('markdown-code');
+            });
+            messageDiv.querySelectorAll('a').forEach(el => {
+                el.classList.add('markdown-link');
+                el.target = '_blank';
+                el.rel = 'noopener noreferrer';
+            });
+        } else {
+            messageDiv.textContent = text;
+        }
+        
         container.appendChild(messageDiv);
         container.scrollTop = container.scrollHeight;
     }

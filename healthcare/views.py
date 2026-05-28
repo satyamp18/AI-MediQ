@@ -128,7 +128,15 @@ def ask_ai(request):
             prompt = (
                 f"You are a medical information assistant (mode: {mode}).\n"
                 "Provide safe, factual, and general health guidance. DO NOT diagnose or prescribe medications.\n"
-                f"User question: {question}\n\nPlease respond clearly and concisely."
+                f"User question: {question}\n\n"
+                "IMPORTANT: Format your response in clean markdown format:\n"
+                "- Use clear headings (##, ###) for sections\n"
+                "- Use bullet points for lists\n"
+                "- Use bold (**text**) for important points\n"
+                "- Use numbered lists for steps or instructions\n"
+                "- Add proper spacing between sections\n"
+                "- Keep paragraphs concise and well-organized\n\n"
+                "Please respond clearly, concisely, and in well-formatted markdown."
             )
             resp = model.generate_content(prompt)
             ai_response = resp.text if hasattr(resp, "text") else str(resp)
