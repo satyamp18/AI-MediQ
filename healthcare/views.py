@@ -143,7 +143,7 @@ def ask_ai(request):
             )
             
             resp = genai_client.models.generate_content(
-                model='gemini-2.5-flash',
+                model='gemini-2.5-flash-lite',
                 contents=prompt
             )
             ai_response = resp.text if hasattr(resp, "text") else str(resp)
@@ -156,6 +156,13 @@ def ask_ai(request):
                 ai_response = (
                     "⚠️ Service Quota Exceeded: The Gemini API free tier quota has been reached. "
                     "The service will resume after the quota resets (typically 24 hours).\n\n"
+                    "General guidance: Always consult with a licensed healthcare professional for medical concerns. "
+                    "Maintain a healthy lifestyle with regular exercise, balanced diet, and adequate sleep."
+                )
+            elif "503" in error_str or "high demand" in error_str.lower() or "unavailable" in error_str.lower():
+                ai_response = (
+                    "⚠️ Service Temporarily Unavailable: The Gemini API is currently experiencing high demand. "
+                    "This is usually temporary. Please try again in a few moments.\n\n"
                     "General guidance: Always consult with a licensed healthcare professional for medical concerns. "
                     "Maintain a healthy lifestyle with regular exercise, balanced diet, and adequate sleep."
                 )
