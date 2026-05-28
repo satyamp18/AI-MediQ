@@ -10,7 +10,7 @@ from django.core.files.storage import default_storage
 import warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
 warnings.filterwarnings('ignore', category=DeprecationWarning)
-import google.generativeai as genai
+import google.genai as genai
 from datetime import datetime
 import json
 from decouple import config
@@ -20,10 +20,11 @@ from .models import Patient, Appointment, MedicalReport, Prescription, Consultat
 
 # Initialize Gemini API with environment variable
 API_KEY = config('GEMINI_API_KEY', default='YOUR_GEMINI_API_KEY_HERE')
+genai_client = None
 try:
-    genai.configure(api_key=API_KEY)
+    genai_client = genai.Client(api_key=API_KEY)
 except Exception as e:
-    print(f"Warning: Could not configure Gemini API - {str(e)}")
+    print(f"Warning: Could not initialize Gemini API - {str(e)}")
 
 
 # ===== AUTHENTICATION =====
@@ -124,7 +125,9 @@ def ask_ai(request):
         
         # Call Gemini API
         try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            if genai_client is None:
+                raise Exception("Gemini API client not initialized. Please check your API key.")
+            
             prompt = (
                 f"You are a medical information assistant (mode: {mode}).\n"
                 "Provide safe, factual, and general health guidance. DO NOT diagnose or prescribe medications.\n"
@@ -138,7 +141,11 @@ def ask_ai(request):
                 "- Keep paragraphs concise and well-organized\n\n"
                 "Please respond clearly, concisely, and in well-formatted markdown."
             )
-            resp = model.generate_content(prompt)
+            
+            resp = genai_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt
+            )
             ai_response = resp.text if hasattr(resp, "text") else str(resp)
         except Exception as api_error:
             error_str = str(api_error)
@@ -152,7 +159,7 @@ def ask_ai(request):
                     "General guidance: Always consult with a licensed healthcare professional for medical concerns. "
                     "Maintain a healthy lifestyle with regular exercise, balanced diet, and adequate sleep."
                 )
-            elif "API key" in error_str or "400" in error_str:
+            elif "API key" in error_str or "400" in error_str or "not initialized" in error_str:
                 ai_response = (
                     "⚠️ API Configuration Issue: The Gemini API key appears to be invalid or not configured. "
                     "Please add a valid API key to your .env file and restart the server.\n\n"
