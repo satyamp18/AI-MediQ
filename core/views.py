@@ -38,10 +38,10 @@ def register(request):
         last_name = request.POST.get('last_name')
 
         if password != password_confirm:
-            return render(request, 'healthcare/register.html', {'error': 'Passwords do not match'})
+            return render(request, 'core/register.html', {'error': 'Passwords do not match'})
 
         if User.objects.filter(username=username).exists():
-            return render(request, 'healthcare/register.html', {'error': 'Username already exists'})
+            return render(request, 'core/register.html', {'error': 'Username already exists'})
 
         user = User.objects.create_user(
             username=username,
@@ -57,7 +57,7 @@ def register(request):
         login(request, user)
         return redirect('dashboard')
     
-    return render(request, 'healthcare/register.html')
+    return render(request, 'core/register.html')
 
 
 def login_view(request):
@@ -70,9 +70,9 @@ def login_view(request):
             login(request, user)
             return redirect('dashboard')
         else:
-            return render(request, 'healthcare/login.html', {'error': 'Invalid credentials'})
+            return render(request, 'core/login.html', {'error': 'Invalid credentials'})
     
-    return render(request, 'healthcare/login.html')
+    return render(request, 'core/login.html')
 
 
 def logout_view(request):
@@ -98,7 +98,7 @@ def dashboard(request):
         'recent_appointments': recent_appointments,
     }
     
-    return render(request, 'healthcare/dashboard.html', context)
+    return render(request, 'core/dashboard.html', context)
 
 
 # ===== VOICE CONSULTATION =====
@@ -111,7 +111,7 @@ def voice_consultation(request):
         'consultation_history': consultation_history,
     }
     
-    return render(request, 'healthcare/voice_consultation.html', context)
+    return render(request, 'core/voice_consultation.html', context)
 
 
 @login_required(login_url='login')
@@ -224,7 +224,7 @@ def medical_reports(request):
         'report_types': MedicalReport.REPORT_TYPES,
     }
     
-    return render(request, 'healthcare/medical_reports.html', context)
+    return render(request, 'core/medical_reports.html', context)
 
 
 @login_required(login_url='login')
@@ -269,7 +269,7 @@ def appointments(request):
         'consultation_types': Appointment.CONSULTATION_CHOICES,
     }
     
-    return render(request, 'healthcare/appointments.html', context)
+    return render(request, 'core/appointments.html', context)
 
 
 @login_required(login_url='login')
@@ -291,9 +291,11 @@ def prescriptions(request):
         symptoms = request.POST.get('symptoms')
         if symptoms:
             try:
-                model = genai.GenerativeModel("gemini-2.5-flash")
                 prompt = f"Suggest general over-the-counter medicines and home remedies for: {symptoms}. Keep it educational only, concise."
-                resp = model.generate_content(prompt)
+                resp = genai_client.models.generate_content(
+                    model='gemini-2.5-flash-lite',
+                    contents=prompt
+                )
                 suggestion = resp.text if hasattr(resp, "text") else str(resp)
                 
                 Prescription.objects.create(
@@ -306,7 +308,7 @@ def prescriptions(request):
                 error_msg = str(e)
                 if "429" in error_msg or "quota" in error_msg.lower():
                     error_msg = "Service quota exceeded. Please try again after 24 hours."
-                return render(request, 'healthcare/prescriptions.html', {
+                return render(request, 'core/prescriptions.html', {
                     'prescriptions': prescriptions,
                     'error': f'Error: {error_msg}'
                 })
@@ -316,7 +318,7 @@ def prescriptions(request):
         'medicines': Medicine.objects.filter(in_stock=True)[:6],
     }
     
-    return render(request, 'healthcare/prescriptions.html', context)
+    return render(request, 'core/prescriptions.html', context)
 
 
 @login_required(login_url='login')
@@ -356,7 +358,7 @@ def pharmacy(request):
     context = {
         'medicines': medicines,
     }
-    return render(request, 'healthcare/pharmacy.html', context)
+    return render(request, 'core/pharmacy.html', context)
 
 
 @login_required(login_url='login')
@@ -416,7 +418,7 @@ def checkout(request):
     
     request.session['cart'] = {}
     
-    return render(request, 'healthcare/order_confirmation.html', {'order': order})
+    return render(request, 'core/order_confirmation.html', {'order': order})
 
 
 # ===== HEALTH DASHBOARD =====
@@ -454,4 +456,4 @@ def health_dashboard(request):
         'report_types': report_types,
     }
     
-    return render(request, 'healthcare/health_dashboard.html', context)
+    return render(request, 'core/health_dashboard.html', context)

@@ -1,4 +1,4 @@
-{% extends 'healthcare/base.html' %}
+{% extends 'core/base.html' %}
 
 {% block title %}Voice Consultation - MediQ{% endblock %}
 
@@ -352,7 +352,7 @@
         
         // Render markdown for AI messages, plain text for user messages
         if (sender === 'ai') {
-            messageDiv.innerHTML = marked(text);
+            messageDiv.innerHTML = marked.parse(text);
             // Add classes to markdown-rendered elements for styling
             messageDiv.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
                 el.classList.add('markdown-heading');

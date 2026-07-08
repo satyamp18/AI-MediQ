@@ -48,14 +48,14 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.IntegerField(default=1)),
                 ('price', models.DecimalField(decimal_places=2, max_digits=8)),
-                ('medicine', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='healthcare.medicine')),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='healthcare.order')),
+                ('medicine', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.medicine')),
+                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='core.order')),
             ],
         ),
         migrations.AddField(
             model_name='order',
             name='medicines',
-            field=models.ManyToManyField(through='healthcare.OrderItem', to='healthcare.medicine'),
+            field=models.ManyToManyField(through='core.OrderItem', to='core.medicine'),
         ),
         migrations.CreateModel(
             name='Patient',
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='order',
             name='patient',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='orders', to='healthcare.patient'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='orders', to='core.patient'),
         ),
         migrations.CreateModel(
             name='MedicalReport',
@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
                 ('report_date', models.DateField()),
                 ('notes', models.TextField(blank=True)),
                 ('uploaded_at', models.DateTimeField(auto_now_add=True)),
-                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='medical_reports', to='healthcare.patient')),
+                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='medical_reports', to='core.patient')),
             ],
             options={
                 'ordering': ['-uploaded_at'],
@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
                 ('mode', models.CharField(default='General Health', max_length=50)),
                 ('language', models.CharField(default='en', max_length=10)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='consultation_history', to='healthcare.patient')),
+                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='consultation_history', to='core.patient')),
             ],
             options={
                 'ordering': ['-created_at'],
@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(choices=[('PENDING', 'Pending'), ('CONFIRMED', 'Confirmed'), ('COMPLETED', 'Completed'), ('CANCELLED', 'Cancelled')], default='CONFIRMED', max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='appointments', to='healthcare.patient')),
+                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='appointments', to='core.patient')),
             ],
             options={
                 'ordering': ['-appointment_date', '-appointment_time'],
@@ -133,7 +133,7 @@ class Migration(migrations.Migration):
                 ('symptoms', models.TextField()),
                 ('suggestion', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='prescriptions', to='healthcare.patient')),
+                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='prescriptions', to='core.patient')),
             ],
             options={
                 'ordering': ['-created_at'],
