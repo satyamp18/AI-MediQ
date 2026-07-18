@@ -49,3 +49,4 @@ Thumbs.db
 
 # Project specific
 *.pid
+db.sqlite3
